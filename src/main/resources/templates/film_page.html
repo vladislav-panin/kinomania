@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${film.name}"></title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+
+
+<body>
+
+<div class="header">
+
+    <span class="header-text">КИНОМАНИЯ</span>
+</div>
+
+    <span>ЭТО СТРАНИЦА ФИЛЬМА</span>
+    <br>
+    <span th:text="${film.name}"></span>
+    <br>
+    <span th:text="${film.description}"></span>
+    <br>
+    <span th:text="${film.year}"></span>
+    <br>
+    <span th:text="${film.releaseDate}"></span>
+    <br>
+    <span th:text="${film.creator}"></span>
+    <br>
+    <span th:text="${film.time}"></span>
+    <br>
+    <span th:text="${film.actors}"></span>
+    <br>
+    <span th:text="${film.genre}"></span>
+    <br>
+    <span th:text="'Общая оценка: ' + ${film.rating}"></span>
+    <br>
+
+<div th:each="rating : ${ratingScale}"  class="myRating"><script>/*Я БУДУ КРУТИТЬСЯ В МАССИВЕ, ЭЛЕМЕНТЫ КОТОРОГО СОСТОЯТ ИЗ ЦИФР ОТ 0 ДО 5*/</script>
+    <p th:switch="${ratingScale.get(rating)}">
+        <a th:case="''" th:href="@{/filmPage/{fil}(fil=${film.name})}"><script>/*КОГДА Я КЛИКНУ НА ЦИФЕРКУ, СТРАНИЦУ ДОЛЖНО ПЕРЕЗАГРУЗИТЬ, А ЦИФЕРКУ Я ДОЛЖЕН ОТПРАВИТЬ В КОНТРОЛЛЕР*/</script>
+            <span  th:text="${ratingScale.get(rating)}"></span> <script>/*В ЭТОЙ СТРОКЕ МНЕ НАДО ОТОБРАЗИТЬ ЦИФЕРКУ РЕЙТОСА*/</script>
+        </a>
+        <a th:case="'0'" th:href="@{/filmPage/0/{fil}(fil=${film.name})}"><script>/*КОГДА Я КЛИКНУ НА ЦИФЕРКУ, СТРАНИЦУ ДОЛЖНО ПЕРЕЗАГРУЗИТЬ, А ЦИФЕРКУ Я ДОЛЖЕН ОТПРАВИТЬ В КОНТРОЛЛЕР*/</script>
+            <span  th:text="${ratingScale.get(rating)}"></span> <script>/*В ЭТОЙ СТРОКЕ МНЕ НАДО ОТОБРАЗИТЬ ЦИФЕРКУ РЕЙТОСА*/</script>
+        </a>
+        <a th:case="'1'" th:href="@{/filmPage/1/{fil}(fil=${film.name})}"><script>/*КОГДА Я КЛИКНУ НА ЦИФЕРКУ, СТРАНИЦУ ДОЛЖНО ПЕРЕЗАГРУЗИТЬ, А ЦИФЕРКУ Я ДОЛЖЕН ОТПРАВИТЬ В КОНТРОЛЛЕР*/</script>
+            <span  th:text="${ratingScale.get(rating)}"></span> <script>/*В ЭТОЙ СТРОКЕ МНЕ НАДО ОТОБРАЗИТЬ ЦИФЕРКУ РЕЙТОСА*/</script>
+        </a>
+        <a th:case="'2'" th:href="@{/filmPage/2/{fil}(fil=${film.name})}"><script>/*КОГДА Я КЛИКНУ НА ЦИФЕРКУ, СТРАНИЦУ ДОЛЖНО ПЕРЕЗАГРУЗИТЬ, А ЦИФЕРКУ Я ДОЛЖЕН ОТПРАВИТЬ В КОНТРОЛЛЕР*/</script>
+            <span  th:text="${ratingScale.get(rating)}"></span> <script>/*В ЭТОЙ СТРОКЕ МНЕ НАДО ОТОБРАЗИТЬ ЦИФЕРКУ РЕЙТОСА*/</script>
+        </a>
+        <a th:case="'3'" th:href="@{/filmPage/3/{fil}(fil=${film.name})}"><script>/*КОГДА Я КЛИКНУ НА ЦИФЕРКУ, СТРАНИЦУ ДОЛЖНО ПЕРЕЗАГРУЗИТЬ, А ЦИФЕРКУ Я ДОЛЖЕН ОТПРАВИТЬ В КОНТРОЛЛЕР*/</script>
+            <span  th:text="${ratingScale.get(rating)}"></span> <script>/*В ЭТОЙ СТРОКЕ МНЕ НАДО ОТОБРАЗИТЬ ЦИФЕРКУ РЕЙТОСА*/</script>
+        </a>
+        <a th:case="'4'" th:href="@{/filmPage/4/{fil}(fil=${film.name})}"><script>/*КОГДА Я КЛИКНУ НА ЦИФЕРКУ, СТРАНИЦУ ДОЛЖНО ПЕРЕЗАГРУЗИТЬ, А ЦИФЕРКУ Я ДОЛЖЕН ОТПРАВИТЬ В КОНТРОЛЛЕР*/</script>
+            <span  th:text="${ratingScale.get(rating)}"></span> <script>/*В ЭТОЙ СТРОКЕ МНЕ НАДО ОТОБРАЗИТЬ ЦИФЕРКУ РЕЙТОСА*/</script>
+        </a>
+        <a th:case="'5'" th:href="@{/filmPage/5/{fil}(fil=${film.name})}"><script>/*КОГДА Я КЛИКНУ НА ЦИФЕРКУ, СТРАНИЦУ ДОЛЖНО ПЕРЕЗАГРУЗИТЬ, А ЦИФЕРКУ Я ДОЛЖЕН ОТПРАВИТЬ В КОНТРОЛЛЕР*/</script>
+            <span  th:text="${ratingScale.get(rating)}"></span> <script>/*В ЭТОЙ СТРОКЕ МНЕ НАДО ОТОБРАЗИТЬ ЦИФЕРКУ РЕЙТОСА*/</script>
+        </a>
+
+    </p>
+</div>
+
+
+<form method="get" action="/films_all" th:object="${films}">
+
+    <div class="input-box">
+        <input type="submit" name="toFilms" value="К фильмам">
+    </div>
+
+</form>
+
+
+<form method="post" action="/logout" th:object="${logoutRequest}">
+
+    <div class="input-box">
+        <input type="submit" name="out" value="Выйти из профиля">
+    </div>
+
+</form>
+
+</body>
+</html>

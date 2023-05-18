@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Профиль</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="text_m_p">
+    <p align="center">Это страница вашего профиля, ВАС ЗОВУТ, А МЕНЯ НЕ ЗОВУТ: <span th:text="${userLogin}"></span></p>
+    <br>
+    <span th:text="${profileRequest.login}"></span>
+    <br>
+    <span th:text="${profileRequest.preferences}"></span>
+    <br>
+    <span th:text="${profileRequest.birthDate}"></span>
+    <span th:text="${films}"></span>
+
+
+    <form method="post" action="/logout" th:object="${logoutRequest}">
+        <div class="input-box">
+            <input type="submit" name="out" value="Выйти">
+        </div>
+    </form>
+
+
+
+</div>
+</body>
+</html>
