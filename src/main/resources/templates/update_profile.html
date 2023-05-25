@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Профиль</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="header">
+
+  <span class="header-text">КИНОМАНИЯ</span>
+</div>
+<div class="text_m_p">
+
+
+  <div class="form">
+    <form method="post" action="/updateProfile" th:object="${updateRequest}">
+      <h2>Обновление профиля</h2>
+      <div class="input-box">
+        <i class="fa fa-user" aria-hidden="true"></i>
+        <input type="hidden" name="login" placeholder="Логин">
+      </div>
+      <div class="input-box">
+        <i class="fa fa-unlock-alt" aria-hidden="true"></i>
+        <input type="text" name="preferences" placeholder="Предпочтения">
+
+      </div>
+      <div class="input-box">
+        <i class="fa fa-unlock-alt" aria-hidden="true"></i>
+        <input type="text" name="birthDate" placeholder="Дата рождения">
+
+      </div>
+      <div class="input-box">
+        <input type="submit" name="changeData" value="Изменить данные">
+      </div>
+
+    </form>
+  </div>
+
+</div>
+</body>
+</html>

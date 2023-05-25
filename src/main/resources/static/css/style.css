@@ -25,7 +25,27 @@ body {
     box-sizing: border-box;
     border-radius: 10px;
 }
-
+.filmName{
+    position: absolute;
+    top: 100px;
+    left: 900px;
+}
+.description{
+    font-size: large;
+    font-family: fangsong;
+    text: Verdana, sans-serif;
+    position: absolute;
+    top: 200px;
+    left: 600px;
+}
+.description1{
+    font-size: large;
+    font-family: fangsong;
+    position: absolute;
+    top: 240px;
+    left: 600px;
+    right: 300px;
+}
 .header-text{
     position: relative;
     bottom: -25%;
@@ -36,7 +56,148 @@ body {
     font-family: fangsong;
     font-size: x-large;
 }
+.profileHref{
+    margin-left: 90%;
+}
+.rightOnPage{
+    margin-right: 10% ;
+}
+.year{
+    font-size: large;
+    text: Verdana, sans-serif;
+    font-family: fangsong;
+    position: absolute;
+    top: 310px;
+    left: 600px;
+    right: 300px;
+}
+.year1{
+    font-size: large;
+    font-family: fangsong;
+    position: absolute;
+    top: 340px;
+    left: 600px;
+    right: 300px;
+}
+.creator{
+    font-size: large;
+    font-family: fangsong;
+    position: absolute;
+    top: 400px;
+    left: 600px;
+    right: 300px;
+}
+.creator1{
+    font-size: large;
+    font-family: fangsong;
+    position: absolute;
+    top: 430px;
+    left: 600px;
+    right: 300px;
+}
+.contin{
+    font-size: large;
+    font-family: fangsong;
+    position: absolute;
+    top: 500px;
+    left: 600px;
+    right: 300px;
+}
+.contin1{
+    font-size: large;
+    font-family: fangsong;
+    position: absolute;
+    top: 530px;
+    left: 600px;
+    right: 300px;
+}
+.actors{
+    font-size: large;
+    font-family: fangsong;
+    position: absolute;
+    top: 610px;
+    left: 600px;
+    right: 300px;
+}
+.actors1{
+    font-size: large;
+    font-family: fangsong;
+    position: absolute;
+    top: 640px;
+    left: 600px;
+    right: 300px;
+}
+.genre{
+    font-size: large;
+    font-family: fangsong;
+    position: absolute;
+    top: 710px;
+    left: 600px;
+    right: 300px;
+}
+.genre1{
+    font-size: large;
+    font-family: fangsong;
+    position: absolute;
+    top: 740px;
+    left: 600px;
+    right: 300px;
+}
+.leftSide{
+    position: absolute;
+    margin-left:2%;
+    top:190px;
+}
+.left{
+    margin-left: 1%;
+}
+.rightForFilmRec{
+    margin-right: 20%;
+}
+.allPage{
 
+
+}
+.parent
+{   margin-left: 15%;
+    height: 200px;
+}
+.child
+{
+    height: 100px;
+    display: inline-block;
+    width: 30%;
+}
+.child1
+{
+    position: absolute;
+    top: 150px;
+    left: 20px;
+    display: inline-block;
+    width: 30%;
+}
+
+.commentBox{
+
+}
+
+.child2
+{
+    position: absolute;
+    top: 120px;
+    left: 350px;
+    display: inline-block;
+    width: 30%;
+}
+
+.films{
+    margin-left: 10%;
+    width: 100%; /* Ширина основного блока меню */
+    height: 50px; /* Высота основного блока меню */
+    position: relative;
+    display: table;
+    padding: 0;
+}
 
 .form h2 {
     color: #000;

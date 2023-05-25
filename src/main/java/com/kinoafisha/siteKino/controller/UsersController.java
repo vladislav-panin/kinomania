@@ -1,20 +1,12 @@
 package com.kinoafisha.siteKino.controller;
 
 import com.kinoafisha.siteKino.AuthTrueEntity;
+import com.kinoafisha.siteKino.mapper.CommentsMapper;
 import com.kinoafisha.siteKino.mapper.FilmsMapper;
 import com.kinoafisha.siteKino.mapper.RatingMapper;
-import com.kinoafisha.siteKino.model.FilmModel;
-import com.kinoafisha.siteKino.model.MyValue;
-import com.kinoafisha.siteKino.model.RatingModel;
-import com.kinoafisha.siteKino.model.UsersModel;
-import com.kinoafisha.siteKino.model.dto.FilmFullDto;
-import com.kinoafisha.siteKino.model.dto.FilmsShortDto;
-import com.kinoafisha.siteKino.model.dto.RatingDto;
-import com.kinoafisha.siteKino.model.dto.UserProfileDto;
-import com.kinoafisha.siteKino.repository.AuthTrueRepository;
-import com.kinoafisha.siteKino.repository.FilmRepository;
-import com.kinoafisha.siteKino.repository.RatingRepository;
-import com.kinoafisha.siteKino.repository.UsersRepository;
+import com.kinoafisha.siteKino.model.*;
+import com.kinoafisha.siteKino.model.dto.*;
+import com.kinoafisha.siteKino.repository.*;
 import com.kinoafisha.siteKino.service.FilmsService;
 import com.kinoafisha.siteKino.service.RatingService;
 import com.kinoafisha.siteKino.service.UsersService;
@@ -48,6 +40,10 @@ public class UsersController {
 
     private final RatingMapper ratingMapper;
 
+    private final CommentsRepository commentsRepository;
+
+    private final CommentsMapper commentsMapper;
+
 
 
     @GetMapping("/easy1")
@@ -80,6 +76,42 @@ public class UsersController {
         return "all_films";
     }
 */
+  //  profile_other_user
+
+
+    //Есть гет метод для профиля другого чела
+    @GetMapping("/profile/{userName}")
+    public String getOtherUserProfilePage(Model model,@PathVariable String userName){
+
+        UsersModel usersModel = usersRepository.findUsersModelByLogin(userName);
+        Integer userId = usersModel.getUserId();
+        UserProfileDto profile = usersService.getProfile(usersModel);
+        List<RatingModel> ratingModelsWithHighRate = ratingRepository.findRatingModelsByRatingAndUserId(5,userId);//Кладу в список все рейтинги, у которых 5 (тут же лежат айди фильмов, которые имеют рейт 5)
+        if(ratingModelsWithHighRate.size()!=0)
+        {
+            List<FilmsShortDto> fsd = new ArrayList<>();
+            for(RatingModel ratingModel : ratingModelsWithHighRate)
+            {
+                ratingModel.getRatingId();
+                Integer filmId = ratingModel.getFilmId();
+                FilmModel filmModel = filmRepository.findFilmModelByFilmId(filmId);
+                //Я хочу сразу сделать из этой модели короткое дто
+                FilmsShortDto oneShortFilm = filmsMapper.toFilmsShortDto(filmModel);
+                fsd.add(oneShortFilm);
+
+            }
+
+            model.addAttribute("films", fsd);
+        }
+        else {
+            List<FilmsShortDto> filmsShortDtos = filmsService.getAllFilms();
+            model.addAttribute("films", filmsShortDtos);
+        }
+        model.addAttribute("userLogin", usersModel.getLogin());
+        model.addAttribute("profileRequest", profile);
+        return "profile_other_user";
+    }
+
 
     @GetMapping("/profile")
     public String getProfilePage(Model model){
@@ -112,6 +144,51 @@ public class UsersController {
         return "profile_page";
     }
 
+
+    @GetMapping("/updateProfileGet")
+    public String getUpdatePage(Model model){
+        model.addAttribute("updateRequest", new UsersModel());
+        return "update_profile";
+    }
+
+
+    @PostMapping("/updateProfile")
+    public String updateProfile(@ModelAttribute UsersModel usersModel) //Возможно логин не может быть равен нулю, нужно подумать как енто сделать
+    {
+        System.out.println("update_profile request: " + usersModel);
+        UsersModel userModelFromDb = usersRepository.findUsersModelByAuthentificated(1);
+        String userFromDbLogin = userModelFromDb.getLogin();
+        String userFromDbPreferences = userModelFromDb.getPreferences();
+        String userFromDbBirthDate = userModelFromDb.getBirthDate();
+
+
+
+        if(usersModel.getLogin()=="")
+        {
+            usersModel.setLogin(userFromDbLogin);
+        }
+        if(usersModel.getPreferences()=="")
+        {
+            usersModel.setPreferences(userFromDbPreferences);
+        }
+        if(usersModel.getBirthDate()=="")
+        {
+            usersModel.setBirthDate(userFromDbBirthDate);
+        }
+        //Мне нужно пересохранить в базу уже существующего юзера, поэтому небольшой финт ушами
+        userModelFromDb.setLogin(usersModel.getLogin());
+        userModelFromDb.setPreferences(usersModel.getPreferences());
+        userModelFromDb.setBirthDate(usersModel.getBirthDate());
+        usersRepository.save(userModelFromDb);
+
+        //мы сохранили нашего юзера, теперь надо отрисовать и вернуть страничку профиля
+
+        return "profile_update_success";
+
+    }
+
+
+
     @PostMapping("/register")
     public String register(@ModelAttribute UsersModel usersModel)
     {
@@ -127,6 +204,80 @@ public class UsersController {
         }else{
             return "reg_error_page";
         }
+    }
+
+    @PostMapping("/addComment")
+    public String addCommentToFilm(@ModelAttribute CommentsModel commentsModel, Model model) //добавление коментария к фильму
+    {
+        System.out.println("comment request: " + commentsModel);//Получилось! Я могу получить коммент
+        UsersModel authenticated = usersRepository.findUsersModelByAuthentificated(1);
+        String userName = authenticated.getLogin();
+       // String userImage = authenticated.getImage();//У юзеров пока нету аватарок, мб и не будет
+        commentsModel.setName(userName);
+        commentsRepository.save(commentsModel);
+
+
+
+
+        model.addAttribute("comment", commentsModel);
+
+        //Теперь здесь мне надо сформировать страничку film_page заново. Имя фильма я уже знаю
+        FilmFullDto filmFullDto = filmsService.findFilmByNameDto(commentsModel.getFilmName());
+
+        //занимаюсь выводом комментариев
+        List<CommentsModel> commentsModelList = commentsRepository.findCommentsModelByFilmName(commentsModel.getFilmName());//Тут у меня лист комментов к фильму
+        if(commentsModelList.size()==0)
+        {
+            String admComment = "Комментариев к фильму пока нет, будьте первым, кто оставит комментарий"; //Если эта хуйня останется после осталвения комментариев, ее надо будет вырезать
+            model.addAttribute("admComment",admComment);
+        }else{
+            List<CommentsShortDto> commentsShortDtoList = new ArrayList<>();
+            for(CommentsModel one_comment: commentsModelList)
+            {
+                CommentsShortDto one_shortComment = commentsMapper.toCommentsShortDto(one_comment);
+                commentsShortDtoList.add(one_shortComment);
+            }
+            //На выбор два варианта - просто добавить коммент к фильмДто, но тогда не ясно как выводить ник юзера оставившего коммент
+            //Второй вариант - создать атрибут с комментами, и выводить его, тогда проблема отпадет
+            model.addAttribute("comments",commentsShortDtoList);
+            //Теперь надо сходить в фильм пейдж, и вывести в цикле атрибут комментс
+        }
+
+        //Занимаюсь рейтингом
+        FilmModel filmModelForId = filmRepository.findFilmModelByName(commentsModel.getFilmName());
+        Integer filmId = filmModelForId.getFilmId();
+        List<RatingModel> ratingModelList = ratingRepository.findRatingModelsByFilmId(filmId);
+        Integer filmRating = 0;
+        Integer filmRatingSum = 0;
+        if(ratingModelList != null) {
+            for (RatingModel ratingModel : ratingModelList) {
+                filmRatingSum = filmRatingSum + ratingModel.getRating();
+
+            }
+            Integer ratingListSize = ratingModelList.size();
+            filmRating = filmRatingSum/ratingListSize;
+            filmFullDto.setRating(filmRating);
+
+            FilmModel filmModelForBd = filmRepository.findFilmModelByName(commentsModel.getFilmName());
+            filmModelForBd.setRating(filmRating);
+            filmRepository.save(filmModelForBd);
+        }else{
+            filmFullDto.setRating(0);
+        }
+
+        model.addAttribute("film", filmFullDto); // перенес
+
+        List<Integer> ratingScale = new ArrayList<>(); //Создаю свою шкалу рейтинга
+        for(int i=0; i<6; i++)
+        {
+            ratingScale.add(i);//заполняю шкалу рейтинга
+        }
+        model.addAttribute("ratingScale", ratingScale);//добавляю атрибут шкалы рейтинга
+
+        // model.addAttribute("film", filmFullDto);
+        return "film_page";
+
+
     }
 
 
@@ -236,17 +387,41 @@ public class UsersController {
 
     }
 
+
+
+
     @GetMapping("/filmPage/{name}")
     public String getFilmByFilmName(@ModelAttribute FilmModel filmModel,  Model model){// получение фильма по имени
         String name = filmModel.getName();
         FilmFullDto filmFullDto = filmsService.findFilmByNameDto(name);
 
+        //занимаюсь выводом комментариев
+        List<CommentsModel> commentsModelList = commentsRepository.findCommentsModelByFilmName(name);//Тут у меня лист комментов к фильму
+        if(commentsModelList.size()==0)
+        {
+            String admComment = "Комментариев к фильму пока нет, будьте первым, кто оставит комментарий"; //Если эта хуйня останется после осталвения комментариев, ее надо будет вырезать
+            model.addAttribute("admComment",admComment);
+        }else{
+            List<CommentsShortDto> commentsShortDtoList = new ArrayList<>();
+            for(CommentsModel one_comment: commentsModelList)
+            {
+                CommentsShortDto one_shortComment = commentsMapper.toCommentsShortDto(one_comment);
+                commentsShortDtoList.add(one_shortComment);
+            }
+            //На выбор два варианта - просто добавить коммент к фильмДто, но тогда не ясно как выводить ник юзера оставившего коммент
+            //Второй вариант - создать атрибут с комментами, и выводить его, тогда проблема отпадет
+            model.addAttribute("comments",commentsShortDtoList);
+            //Теперь надо сходить в фильм пейдж, и вывести в цикле атрибут комментс
+        }
+
+        //Занимаюсь рейтингом
         FilmModel filmModelForId = filmRepository.findFilmModelByName(name);
         Integer filmId = filmModelForId.getFilmId();
         List<RatingModel> ratingModelList = ratingRepository.findRatingModelsByFilmId(filmId);
         Integer filmRating = 0;
         Integer filmRatingSum = 0;
-        if(ratingModelList != null) {
+     //   if(ratingModelList != null) {
+        if(ratingModelList.size() != 0) {
             for (RatingModel ratingModel : ratingModelList) {
                 filmRatingSum = filmRatingSum + ratingModel.getRating();
 
@@ -319,13 +494,32 @@ public class UsersController {
     public String getFilmByFilmNameR0(@ModelAttribute FilmModel filmModel,  Model model){// получение фильма по имени
         String name = filmModel.getName();
         FilmFullDto filmFullDto = filmsService.findFilmByNameDto(name);
+        //Занимаюсь выводом комментов
+        List<CommentsModel> commentsModelList = commentsRepository.findCommentsModelByFilmName(name);//Тут у меня лист комментов к фильму
+        if(commentsModelList.size()==0)
+        {
+            String admComment = "Комментариев к фильму пока нет, будьте первым, кто оставит комментарий"; //Если эта хуйня останется после осталвения комментариев, ее надо будет вырезать
+            model.addAttribute("admComment",admComment);
+        }else{
+            List<CommentsShortDto> commentsShortDtoList = new ArrayList<>();
+            for(CommentsModel one_comment: commentsModelList)
+            {
+                CommentsShortDto one_shortComment = commentsMapper.toCommentsShortDto(one_comment);
+                commentsShortDtoList.add(one_shortComment);
+            }
+            //На выбор два варианта - просто добавить коммент к фильмДто, но тогда не ясно как выводить ник юзера оставившего коммент
+            //Второй вариант - создать атрибут с комментами, и выводить его, тогда проблема отпадет
+            model.addAttribute("comments",commentsShortDtoList);
+            //Теперь надо сходить в фильм пейдж, и вывести в цикле атрибут комментс
+        }
 
+        //Занимаюсь рейтингом
         FilmModel filmModelForId1 = filmRepository.findFilmModelByName(name);
         Integer filmId1 = filmModelForId1.getFilmId();
         List<RatingModel> ratingModelList = ratingRepository.findRatingModelsByFilmId(filmId1);
         Integer filmRating = 0;
         Integer filmRatingSum = 0;
-        if(ratingModelList != null) {
+        if(ratingModelList.size() != 0) {
             for (RatingModel ratingModel : ratingModelList) {
                 filmRatingSum = filmRatingSum + ratingModel.getRating();
 
@@ -377,13 +571,33 @@ public class UsersController {
     public String getFilmByFilmNameR1(@ModelAttribute FilmModel filmModel,  Model model){// получение фильма по имени
         String name = filmModel.getName();
         FilmFullDto filmFullDto = filmsService.findFilmByNameDto(name);
+        //Занимаюсь выводом комментов
+        List<CommentsModel> commentsModelList = commentsRepository.findCommentsModelByFilmName(name);//Тут у меня лист комментов к фильму
+        if(commentsModelList.size()==0)
+        {
+            String admComment = "Комментариев к фильму пока нет, будьте первым, кто оставит комментарий"; //Если эта хуйня останется после осталвения комментариев, ее надо будет вырезать
+            model.addAttribute("admComment",admComment);
+        }else{
+            List<CommentsShortDto> commentsShortDtoList = new ArrayList<>();
+            for(CommentsModel one_comment: commentsModelList)
+            {
+                CommentsShortDto one_shortComment = commentsMapper.toCommentsShortDto(one_comment);
+                commentsShortDtoList.add(one_shortComment);
+            }
+            //На выбор два варианта - просто добавить коммент к фильмДто, но тогда не ясно как выводить ник юзера оставившего коммент
+            //Второй вариант - создать атрибут с комментами, и выводить его, тогда проблема отпадет
+            model.addAttribute("comments",commentsShortDtoList);
+            //Теперь надо сходить в фильм пейдж, и вывести в цикле атрибут комментс
+        }
+
+        //Занимаюсь рейтингом
 
         FilmModel filmModelForId1 = filmRepository.findFilmModelByName(name);
         Integer filmId1 = filmModelForId1.getFilmId();
         List<RatingModel> ratingModelList = ratingRepository.findRatingModelsByFilmId(filmId1);
         Integer filmRating = 0;
         Integer filmRatingSum = 0;
-        if(ratingModelList != null) {
+        if(ratingModelList.size() != 0) {
             for (RatingModel ratingModel : ratingModelList) {
                 filmRatingSum = filmRatingSum + ratingModel.getRating();
 
@@ -435,13 +649,33 @@ public class UsersController {
     public String getFilmByFilmNameR2(@ModelAttribute FilmModel filmModel,  Model model){// получение фильма по имени
         String name = filmModel.getName();
         FilmFullDto filmFullDto = filmsService.findFilmByNameDto(name);
+        //Занимаюсь выводом комментов
+        List<CommentsModel> commentsModelList = commentsRepository.findCommentsModelByFilmName(name);//Тут у меня лист комментов к фильму
+        if(commentsModelList.size()==0)
+        {
+            String admComment = "Комментариев к фильму пока нет, будьте первым, кто оставит комментарий"; //Если эта хуйня останется после осталвения комментариев, ее надо будет вырезать
+            model.addAttribute("admComment",admComment);
+        }else{
+            List<CommentsShortDto> commentsShortDtoList = new ArrayList<>();
+            for(CommentsModel one_comment: commentsModelList)
+            {
+                CommentsShortDto one_shortComment = commentsMapper.toCommentsShortDto(one_comment);
+                commentsShortDtoList.add(one_shortComment);
+            }
+            //На выбор два варианта - просто добавить коммент к фильмДто, но тогда не ясно как выводить ник юзера оставившего коммент
+            //Второй вариант - создать атрибут с комментами, и выводить его, тогда проблема отпадет
+            model.addAttribute("comments",commentsShortDtoList);
+            //Теперь надо сходить в фильм пейдж, и вывести в цикле атрибут комментс
+        }
+
+        //Занимаюсь рейтингом
 
         FilmModel filmModelForId1 = filmRepository.findFilmModelByName(name);
         Integer filmId1 = filmModelForId1.getFilmId();
         List<RatingModel> ratingModelList = ratingRepository.findRatingModelsByFilmId(filmId1);
         Integer filmRating = 0;
         Integer filmRatingSum = 0;
-        if(ratingModelList != null) {
+        if(ratingModelList.size() != 0) {
             for (RatingModel ratingModel : ratingModelList) {
                 filmRatingSum = filmRatingSum + ratingModel.getRating();
 
@@ -491,13 +725,34 @@ public class UsersController {
     public String getFilmByFilmNameR3(@ModelAttribute FilmModel filmModel,  Model model){// получение фильма по имени
         String name = filmModel.getName();
         FilmFullDto filmFullDto = filmsService.findFilmByNameDto(name);
+        //Занимаюсь выводом комментов
+        List<CommentsModel> commentsModelList = commentsRepository.findCommentsModelByFilmName(name);//Тут у меня лист комментов к фильму
+        if(commentsModelList.size()==0)
+        {
+            String admComment = "Комментариев к фильму пока нет, будьте первым, кто оставит комментарий"; //Если эта хуйня останется после осталвения комментариев, ее надо будет вырезать
+            model.addAttribute("admComment",admComment);
+        }else{
+            List<CommentsShortDto> commentsShortDtoList = new ArrayList<>();
+            for(CommentsModel one_comment: commentsModelList)
+            {
+                CommentsShortDto one_shortComment = commentsMapper.toCommentsShortDto(one_comment);
+                commentsShortDtoList.add(one_shortComment);
+            }
+            //На выбор два варианта - просто добавить коммент к фильмДто, но тогда не ясно как выводить ник юзера оставившего коммент
+            //Второй вариант - создать атрибут с комментами, и выводить его, тогда проблема отпадет
+            model.addAttribute("comments",commentsShortDtoList);
+            //Теперь надо сходить в фильм пейдж, и вывести в цикле атрибут комментс
+        }
+
+        //Занимаюсь рейтингом
 
         FilmModel filmModelForId1 = filmRepository.findFilmModelByName(name);
         Integer filmId1 = filmModelForId1.getFilmId();
         List<RatingModel> ratingModelList = ratingRepository.findRatingModelsByFilmId(filmId1);
         Integer filmRating = 0;
         Integer filmRatingSum = 0;
-        if(ratingModelList != null) {
+       // if(ratingModelList != null) {
+        if(ratingModelList.size() != 0) {
             for (RatingModel ratingModel : ratingModelList) {
                 filmRatingSum = filmRatingSum + ratingModel.getRating();
 
@@ -547,13 +802,33 @@ public class UsersController {
     public String getFilmByFilmNameR4(@ModelAttribute FilmModel filmModel,  Model model){// получение фильма по имени
         String name = filmModel.getName();
         FilmFullDto filmFullDto = filmsService.findFilmByNameDto(name);
+        //Занимаюсь выводом комментов
+        List<CommentsModel> commentsModelList = commentsRepository.findCommentsModelByFilmName(name);//Тут у меня лист комментов к фильму
+        if(commentsModelList.size()==0)
+        {
+            String admComment = "Комментариев к фильму пока нет, будьте первым, кто оставит комментарий"; //Если эта хуйня останется после осталвения комментариев, ее надо будет вырезать
+            model.addAttribute("admComment",admComment);
+        }else{
+            List<CommentsShortDto> commentsShortDtoList = new ArrayList<>();
+            for(CommentsModel one_comment: commentsModelList)
+            {
+                CommentsShortDto one_shortComment = commentsMapper.toCommentsShortDto(one_comment);
+                commentsShortDtoList.add(one_shortComment);
+            }
+            //На выбор два варианта - просто добавить коммент к фильмДто, но тогда не ясно как выводить ник юзера оставившего коммент
+            //Второй вариант - создать атрибут с комментами, и выводить его, тогда проблема отпадет
+            model.addAttribute("comments",commentsShortDtoList);
+            //Теперь надо сходить в фильм пейдж, и вывести в цикле атрибут комментс
+        }
+
+        //Занимаюсь рейтингом
 
         FilmModel filmModelForId1 = filmRepository.findFilmModelByName(name);
         Integer filmId1 = filmModelForId1.getFilmId();
         List<RatingModel> ratingModelList = ratingRepository.findRatingModelsByFilmId(filmId1);
         Integer filmRating = 0;
         Integer filmRatingSum = 0;
-        if(ratingModelList != null) {
+        if(ratingModelList.size() != 0) {
             for (RatingModel ratingModel : ratingModelList) {
                 filmRatingSum = filmRatingSum + ratingModel.getRating();
 
@@ -604,13 +879,33 @@ public class UsersController {
     public String getFilmByFilmNameR5(@ModelAttribute FilmModel filmModel,  Model model){// получение фильма по имени
         String name = filmModel.getName();
         FilmFullDto filmFullDto = filmsService.findFilmByNameDto(name);
+        //Занимаюсь выводом комментов
+        List<CommentsModel> commentsModelList = commentsRepository.findCommentsModelByFilmName(name);//Тут у меня лист комментов к фильму
+        if(commentsModelList.size()==0)
+        {
+            String admComment = "Комментариев к фильму пока нет, будьте первым, кто оставит комментарий"; //Если эта хуйня останется после осталвения комментариев, ее надо будет вырезать
+            model.addAttribute("admComment",admComment);
+        }else{
+            List<CommentsShortDto> commentsShortDtoList = new ArrayList<>();
+            for(CommentsModel one_comment: commentsModelList)
+            {
+                CommentsShortDto one_shortComment = commentsMapper.toCommentsShortDto(one_comment);
+                commentsShortDtoList.add(one_shortComment);
+            }
+            //На выбор два варианта - просто добавить коммент к фильмДто, но тогда не ясно как выводить ник юзера оставившего коммент
+            //Второй вариант - создать атрибут с комментами, и выводить его, тогда проблема отпадет
+            model.addAttribute("comments",commentsShortDtoList);
+            //Теперь надо сходить в фильм пейдж, и вывести в цикле атрибут комментс
+        }
+
+        //Занимаюсь рейтингом
 
         FilmModel filmModelForId1 = filmRepository.findFilmModelByName(name);
         Integer filmId1 = filmModelForId1.getFilmId();
         List<RatingModel> ratingModelList = ratingRepository.findRatingModelsByFilmId(filmId1);
         Integer filmRating = 0;
         Integer filmRatingSum = 0;
-        if(ratingModelList != null) {
+        if(ratingModelList.size() != 0) {
             for (RatingModel ratingModel : ratingModelList) {
                 filmRatingSum = filmRatingSum + ratingModel.getRating();
 

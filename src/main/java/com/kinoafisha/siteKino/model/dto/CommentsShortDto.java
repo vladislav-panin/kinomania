@@ -7,5 +7,5 @@ public class CommentsShortDto {
 
     String message; // отзыв
 
-    String name; // ссылка на аватарку
+    String name; // имя
 }

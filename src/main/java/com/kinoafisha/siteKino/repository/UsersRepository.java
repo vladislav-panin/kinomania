@@ -12,4 +12,6 @@ public interface UsersRepository extends JpaRepository<UsersModel, Integer> {
 
 
     UsersModel findUsersModelByAuthentificated(Integer authentificated);
+
+    UsersModel findUsersModelByLogin(String name);
 }

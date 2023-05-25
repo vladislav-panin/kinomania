@@ -9,5 +9,7 @@ public interface CommentsRepository extends JpaRepository<CommentsModel, Integer
 
     List<CommentsModel> findAll();
 
+    List<CommentsModel> findCommentsModelByFilmName(String filmName);
+
     CommentsModel findCommentsModelByCommentsId(Integer commentsId);
 }

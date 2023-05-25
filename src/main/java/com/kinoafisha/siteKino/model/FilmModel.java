@@ -32,6 +32,8 @@ public class FilmModel {
 
     String genre; // жанр
 
+    String image;
+
     @Nullable
     Integer rating; // рейтинг
 

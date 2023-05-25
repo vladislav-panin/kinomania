@@ -49,7 +49,7 @@ public class FilmsController {
     @PostMapping("/{filmId}/addComment")
     public String addCommentToFilm(@RequestBody String message, Model model) //добавление коментария к фильму
     {
-        CommentsModel commentsModel = filmsService.addNewComment(message);
+        CommentsModel commentsModel = filmsService.addNewComment(message);//Допустим есть сервис, который добавит коммент к фильму
         model.addAttribute("comment", commentsModel);
         return "film_page";
 

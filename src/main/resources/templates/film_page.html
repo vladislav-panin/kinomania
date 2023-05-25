@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title th:text="${film.name}"></title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 
 
@@ -15,55 +15,96 @@
     <span class="header-text">КИНОМАНИЯ</span>
 </div>
 
-    <span>ЭТО СТРАНИЦА ФИЛЬМА</span>
     <br>
-    <span th:text="${film.name}"></span>
+    <h2 class="filmName" th:text="${film.name}"></h2>
     <br>
-    <span th:text="${film.description}"></span>
+    <span class="description">Описание: </span><span class="description1" th:text="${film.description}"></span>
     <br>
-    <span th:text="${film.year}"></span>
+    <span class="year">Год выхода: </span>  <span class="year1" th:text="${film.year}"></span>
     <br>
-    <span th:text="${film.releaseDate}"></span>
+    <span class="creator" >Режиссер: </span><span class="creator1" th:text="${film.creator}"></span>
     <br>
-    <span th:text="${film.creator}"></span>
+    <span class="contin" >Продолжительность: </span><span class="contin1" th:text="${film.time}"></span>
     <br>
-    <span th:text="${film.time}"></span>
+    <span class="actors" >Актеры: </span><span class="actors1" th:text="${film.actors}"></span>
     <br>
-    <span th:text="${film.actors}"></span>
-    <br>
-    <span th:text="${film.genre}"></span>
-    <br>
-    <span th:text="'Общая оценка: ' + ${film.rating}"></span>
-    <br>
+    <span class="genre" >Жанр: </span><span class="genre1" th:text="${film.genre}"></span>
 
-<div th:each="rating : ${ratingScale}"  class="myRating"><script>/*Я БУДУ КРУТИТЬСЯ В МАССИВЕ, ЭЛЕМЕНТЫ КОТОРОГО СОСТОЯТ ИЗ ЦИФР ОТ 0 ДО 5*/</script>
-    <p th:switch="${ratingScale.get(rating)}">
-        <a th:case="''" th:href="@{/filmPage/{fil}(fil=${film.name})}"><script>/*КОГДА Я КЛИКНУ НА ЦИФЕРКУ, СТРАНИЦУ ДОЛЖНО ПЕРЕЗАГРУЗИТЬ, А ЦИФЕРКУ Я ДОЛЖЕН ОТПРАВИТЬ В КОНТРОЛЛЕР*/</script>
-            <span  th:text="${ratingScale.get(rating)}"></span> <script>/*В ЭТОЙ СТРОКЕ МНЕ НАДО ОТОБРАЗИТЬ ЦИФЕРКУ РЕЙТОСА*/</script>
-        </a>
-        <a th:case="'0'" th:href="@{/filmPage/0/{fil}(fil=${film.name})}"><script>/*КОГДА Я КЛИКНУ НА ЦИФЕРКУ, СТРАНИЦУ ДОЛЖНО ПЕРЕЗАГРУЗИТЬ, А ЦИФЕРКУ Я ДОЛЖЕН ОТПРАВИТЬ В КОНТРОЛЛЕР*/</script>
-            <span  th:text="${ratingScale.get(rating)}"></span> <script>/*В ЭТОЙ СТРОКЕ МНЕ НАДО ОТОБРАЗИТЬ ЦИФЕРКУ РЕЙТОСА*/</script>
-        </a>
-        <a th:case="'1'" th:href="@{/filmPage/1/{fil}(fil=${film.name})}"><script>/*КОГДА Я КЛИКНУ НА ЦИФЕРКУ, СТРАНИЦУ ДОЛЖНО ПЕРЕЗАГРУЗИТЬ, А ЦИФЕРКУ Я ДОЛЖЕН ОТПРАВИТЬ В КОНТРОЛЛЕР*/</script>
-            <span  th:text="${ratingScale.get(rating)}"></span> <script>/*В ЭТОЙ СТРОКЕ МНЕ НАДО ОТОБРАЗИТЬ ЦИФЕРКУ РЕЙТОСА*/</script>
-        </a>
-        <a th:case="'2'" th:href="@{/filmPage/2/{fil}(fil=${film.name})}"><script>/*КОГДА Я КЛИКНУ НА ЦИФЕРКУ, СТРАНИЦУ ДОЛЖНО ПЕРЕЗАГРУЗИТЬ, А ЦИФЕРКУ Я ДОЛЖЕН ОТПРАВИТЬ В КОНТРОЛЛЕР*/</script>
-            <span  th:text="${ratingScale.get(rating)}"></span> <script>/*В ЭТОЙ СТРОКЕ МНЕ НАДО ОТОБРАЗИТЬ ЦИФЕРКУ РЕЙТОСА*/</script>
-        </a>
-        <a th:case="'3'" th:href="@{/filmPage/3/{fil}(fil=${film.name})}"><script>/*КОГДА Я КЛИКНУ НА ЦИФЕРКУ, СТРАНИЦУ ДОЛЖНО ПЕРЕЗАГРУЗИТЬ, А ЦИФЕРКУ Я ДОЛЖЕН ОТПРАВИТЬ В КОНТРОЛЛЕР*/</script>
-            <span  th:text="${ratingScale.get(rating)}"></span> <script>/*В ЭТОЙ СТРОКЕ МНЕ НАДО ОТОБРАЗИТЬ ЦИФЕРКУ РЕЙТОСА*/</script>
-        </a>
-        <a th:case="'4'" th:href="@{/filmPage/4/{fil}(fil=${film.name})}"><script>/*КОГДА Я КЛИКНУ НА ЦИФЕРКУ, СТРАНИЦУ ДОЛЖНО ПЕРЕЗАГРУЗИТЬ, А ЦИФЕРКУ Я ДОЛЖЕН ОТПРАВИТЬ В КОНТРОЛЛЕР*/</script>
-            <span  th:text="${ratingScale.get(rating)}"></span> <script>/*В ЭТОЙ СТРОКЕ МНЕ НАДО ОТОБРАЗИТЬ ЦИФЕРКУ РЕЙТОСА*/</script>
-        </a>
-        <a th:case="'5'" th:href="@{/filmPage/5/{fil}(fil=${film.name})}"><script>/*КОГДА Я КЛИКНУ НА ЦИФЕРКУ, СТРАНИЦУ ДОЛЖНО ПЕРЕЗАГРУЗИТЬ, А ЦИФЕРКУ Я ДОЛЖЕН ОТПРАВИТЬ В КОНТРОЛЛЕР*/</script>
-            <span  th:text="${ratingScale.get(rating)}"></span> <script>/*В ЭТОЙ СТРОКЕ МНЕ НАДО ОТОБРАЗИТЬ ЦИФЕРКУ РЕЙТОСА*/</script>
-        </a>
 
+
+<div class="leftSide">
+<div th:switch="${film.image}">
+    <p th:case="'1'">
+        <img  src="https://avatars.mds.yandex.net/get-kinopoisk-image/6201401/68f014e4-1495-45bf-94f5-c8b0d17dae1f/300x450">
+    </p>
+    <p th:case="'2'">
+        <img  src="https://avatars.mds.yandex.net/get-kinopoisk-image/1704946/4c0cc9c9-8d08-4162-95d8-0658c5bda408/300x450">
+    </p>
+    <p th:case="'3'">
+        <img  src="https://avatars.mds.yandex.net/get-kinopoisk-image/1599028/3ab9da68-46bf-4213-b79d-21cd0d8fb5b7/300x450">
     </p>
 </div>
 
 
+
+    <span th:text="'Общая оценка: ' + ${film.rating}"></span>
+    <br>
+<div >
+<div th:each="rating : ${ratingScale}"  >
+    <p th:switch="${ratingScale.get(rating)}">
+        <a th:case="''" th:href="@{/filmPage/{fil}(fil=${film.name})}">
+            <span  th:text="${ratingScale.get(rating)}"></span>
+        </a>
+        <a th:case="'0'" th:href="@{/filmPage/0/{fil}(fil=${film.name})}">
+            <span  th:text="${ratingScale.get(rating)}"></span>
+        </a>
+        <a th:case="'1'" th:href="@{/filmPage/1/{fil}(fil=${film.name})}">
+            <span  th:text="${ratingScale.get(rating)}"></span>
+        </a>
+        <a th:case="'2'" th:href="@{/filmPage/2/{fil}(fil=${film.name})}">
+            <span  th:text="${ratingScale.get(rating)}"></span>
+        </a>
+        <a th:case="'3'" th:href="@{/filmPage/3/{fil}(fil=${film.name})}">
+            <span  th:text="${ratingScale.get(rating)}"></span>
+        </a>
+        <a th:case="'4'" th:href="@{/filmPage/4/{fil}(fil=${film.name})}">
+            <span  th:text="${ratingScale.get(rating)}"></span>
+        </a>
+        <a th:case="'5'" th:href="@{/filmPage/5/{fil}(fil=${film.name})}">
+            <span  th:text="${ratingScale.get(rating)}"></span>
+        </a>
+
+    </p>
+</div>
+</div>
+<br>
+<h2>Отзывы: </h2>
+<span th:text="${admComment}"></span>
+<br>
+
+<div th:each="comment : ${comments}" class="commi">
+    <a th:href="@{/profile/{usr}(usr=${comment.name})}"><span th:text="${comment.name}"></span></a><script>/*ссылка на профиль*/</script>
+    <span th:text="${comment.message}"></span><script>/*сам коммент*/</script>
+</div>
+<div class="commentBox">
+    <form method="post" action="/addComment" th:object="${comment}">
+
+        <div class="input-box">
+            <i class="fa fa-user" aria-hidden="true"></i>
+            <input type="hidden" name="filmName" th:value="${film.name}">
+            <br>
+            <input type="text" name="message" placeholder="Комментарий" required>
+        </div>
+        <div class="input-box">
+            <input type="submit" name="send-comment" value="Добавить комментарий">
+        </div>
+    </form>
+</div>
+
+
+
+
+<br>
 <form method="get" action="/films_all" th:object="${films}">
 
     <div class="input-box">
@@ -72,14 +113,8 @@
 
 </form>
 
+</div>
 
-<form method="post" action="/logout" th:object="${logoutRequest}">
-
-    <div class="input-box">
-        <input type="submit" name="out" value="Выйти из профиля">
-    </div>
-
-</form>
 
 </body>
 </html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${profileRequest.login}"></title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="header">
+
+    <span class="header-text">КИНОМАНИЯ</span>
+</div>
+<div class="allPage">
+
+    <div class="text_m_p">
+        <div class="parent">
+            <script>/*<p align="center">Это страница вашего профиля, ВАС ЗОВУТ, А МЕНЯ НЕ ЗОВУТ: <span th:text="${userLogin}"></span></p>*/</script>
+            <br>
+            <br>
+            <div class="child1">
+                <span class="left">Профиль</span>
+                <br>
+                <br>
+                <span class="left">Ваше имя: </span> <span  th:text="${profileRequest.login}"></span>
+                <br>
+                <br>
+                <span class="left">Предпочтения: </span><span th:text="${profileRequest.preferences}"></span>
+                <br>
+                <br>
+                <span class="left">Дата рождения: </span><span th:text="${profileRequest.birthDate}"></span>
+                <br>
+                <br>
+                <br>
+                <br>
+                <form method="get" action="/films_all" th:object="${films}">
+
+                    <div class="input-box">
+                        <input type="submit" name="toFilms" value="К фильмам">
+                    </div>
+
+                </form>
+            </div>
+
+    <div class="parent">
+        <span>Список предпочтений</span>
+        <br>
+        <br>
+        <div th:each="film : ${films}" class="child">
+            <a th:href="@{/filmPage/{fil}(fil=${film.name})}">
+
+                <div th:switch="${film.image}">
+                    <p th:case="'1'">
+                        <img  src="https://avatars.mds.yandex.net/get-kinopoisk-image/6201401/68f014e4-1495-45bf-94f5-c8b0d17dae1f/300x450">
+                    </p>
+                    <p th:case="'2'">
+                        <img  src="https://avatars.mds.yandex.net/get-kinopoisk-image/1704946/4c0cc9c9-8d08-4162-95d8-0658c5bda408/300x450">
+                    </p>
+                    <p th:case="'3'">
+                        <img  src="https://avatars.mds.yandex.net/get-kinopoisk-image/1599028/3ab9da68-46bf-4213-b79d-21cd0d8fb5b7/300x450">
+                    </p>
+                </div>
+                <span th:text="${film.name}"></span>
+            </a>
+            <br>
+            <span>Оценка Киномании</span>
+            <span th:text="${film.rating}"></span>
+        </div>
+    </div>
+
+
+</div>
+</div>
+</body>
+</html>

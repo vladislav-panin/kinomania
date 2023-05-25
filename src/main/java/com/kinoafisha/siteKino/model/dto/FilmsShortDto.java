@@ -8,4 +8,6 @@ public class FilmsShortDto {
     String image;
 
     String name;
+
+    Integer rating;
 }

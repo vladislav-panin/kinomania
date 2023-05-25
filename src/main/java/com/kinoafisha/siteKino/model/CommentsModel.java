@@ -12,8 +12,12 @@ public class CommentsModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer commentsId;
 
+    String name; // имя юзера
+
     String message; //  отзыв
 
     String image; // ссылка на аватарку
+
+    String filmName;
 
 }
